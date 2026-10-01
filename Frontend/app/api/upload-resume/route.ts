@@ -81,8 +81,6 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     const resumeData = parseResumeText(rawText, (file as File).name);
-    const destPath = path.join(process.cwd(), 'resume-data.json');
-    writeFileSync(destPath, JSON.stringify(resumeData, null, 2), 'utf8');
 
     const ownerName = resumeData.personalInfo?.name ?? 'Unknown';
     const preview: UploadPreview = {
@@ -98,6 +96,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       status: `✅ Resume for "${ownerName}" uploaded and parsed successfully!`,
       name: ownerName,
       preview,
+      resumeData,
     });
   } catch (error) {
     console.error('[/api/upload-resume]', error);

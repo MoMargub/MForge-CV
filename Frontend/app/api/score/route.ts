@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { calculateAtsScore, loadResumeData, tailorResumeData } from '../../../lib/resume-utils';
+import { calculateAtsScore, normalizeResumeData, tailorResumeData } from '../../../lib/resume-utils';
 
 export async function POST(request: NextRequest): Promise<Response> {
   const startTime = Date.now();
@@ -8,10 +8,18 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     const formData = await request.formData();
     const rawJd = formData.get('jd');
+    const resumeDataRaw = formData.get('resumeData');
 
     if (!rawJd || typeof rawJd !== 'string' || !rawJd.trim()) {
       return NextResponse.json(
         { success: false, error: 'Job description is required.' },
+        { status: 400 }
+      );
+    }
+    
+    if (!resumeDataRaw || typeof resumeDataRaw !== 'string') {
+      return NextResponse.json(
+        { success: false, error: 'Please upload your CV first.' },
         { status: 400 }
       );
     }
@@ -24,7 +32,14 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
-    const resumeData = loadResumeData();
+    let parsedData;
+    try {
+      parsedData = JSON.parse(resumeDataRaw);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid CV data.' }, { status: 400 });
+    }
+
+    const resumeData = normalizeResumeData(parsedData);
     const { data: tailoredData } = tailorResumeData(resumeData, jd);
     const ats = calculateAtsScore(tailoredData, jd);
 

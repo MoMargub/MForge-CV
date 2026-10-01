@@ -53,7 +53,7 @@ type JdTab = 'upload' | 'paste' | 'url';
 
 // ── Hooks ──────────────────────────────────────────────────────────────────
 
-function useJdTailor() {
+function useJdTailor(resumeData: ResumeData | null) {
   const [jd, setJd] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<StatusMsg | null>(null);
@@ -73,6 +73,9 @@ function useJdTailor() {
       try {
         const fd = new FormData();
         fd.append('jd', trimmed);
+        if (resumeData) {
+          fd.append('resumeData', JSON.stringify(resumeData));
+        }
         const res = await fetch(endpoint, { method: 'POST', body: fd });
         const data = await res.json() as Record<string, unknown>;
         if (!res.ok) throw new Error((data.error as string) || `Error ${res.status}`);
@@ -85,7 +88,7 @@ function useJdTailor() {
         setLoading(false);
       }
     },
-    [jd]
+    [jd, resumeData]
   );
 
   const handleScore = useCallback(
@@ -141,16 +144,7 @@ function useResumeUploader() {
       const p = data.preview as UploadPreview | undefined;
       if (p) {
         setPreview(p);
-        setResumeData({
-          name: p.name,
-          title: 'Software Engineer',
-          email: p.email,
-          phone: p.phone,
-          location: '',
-          github: '',
-          summary: '',
-          experience: [],
-        });
+        setResumeData(data.resumeData as ResumeData);
       }
       setUploadStatus({ type: 'success', text: (data.status as string) ?? '✅ Resume uploaded!' });
     } catch (e) {
@@ -699,11 +693,12 @@ AtsSection.displayName = 'AtsSection';
 // ── Root Page ──────────────────────────────────────────────────────────────
 
 export default function Page() {
-  const { jd, setJd, loading, status, ats, matchedSkills, hasGenerated, handleScore, handleTailor } = useJdTailor();
   const {
     uploadStatus, uploading, uploadedFile, resumeData, isDragging,
     handleUpload, onDragOver, onDragLeave, onDrop,
   } = useResumeUploader();
+  
+  const { jd, setJd, loading, status, ats, matchedSkills, hasGenerated, handleScore, handleTailor } = useJdTailor(resumeData);
 
   const [activeTab, setActiveTab] = useState<JdTab>('upload');
   const [jdFile, setJdFile] = useState<{ name: string; size: number } | null>(null);

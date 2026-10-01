@@ -1,23 +1,37 @@
 import { execFile } from 'child_process';
 import { writeFileSync, unlinkSync } from 'fs';
 import path from 'path';
+import os from 'os';
 import type { NextRequest } from 'next/server';
-import { loadResumeData, tailorResumeData } from '../../../lib/resume-utils';
+import { normalizeResumeData, tailorResumeData } from '../../../lib/resume-utils';
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
     const formData = await request.formData();
     const jdRaw = formData.get('jd');
+    const resumeDataRaw = formData.get('resumeData');
 
     if (!jdRaw || typeof jdRaw !== 'string' || !jdRaw.trim()) {
       return Response.json({ error: 'Please paste a JD before submitting.' }, { status: 400 });
     }
+    
+    if (!resumeDataRaw || typeof resumeDataRaw !== 'string') {
+      return Response.json({ error: 'Please upload your CV first.' }, { status: 400 });
+    }
 
     const jd = jdRaw.trim();
-    const resumeData = loadResumeData();
+    let parsedData;
+    try {
+      parsedData = JSON.parse(resumeDataRaw);
+    } catch {
+      return Response.json({ error: 'Invalid CV data.' }, { status: 400 });
+    }
+
+    const resumeData = normalizeResumeData(parsedData);
     const { data: tailoredData, matchedSkills } = tailorResumeData(resumeData, jd);
 
-    const tempPath = path.join(process.cwd(), '.tailored-data.tmp.json');
+    const tempId = Math.random().toString(36).substring(7);
+    const tempPath = path.join(os.tmpdir(), `.tailored-data-${tempId}.json`);
     writeFileSync(tempPath, JSON.stringify(tailoredData, null, 2));
 
     await new Promise<void>((resolve, reject) => {

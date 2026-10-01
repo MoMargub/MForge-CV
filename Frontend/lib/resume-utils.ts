@@ -8,8 +8,7 @@ import path from 'path';
 export const defaultDataPath: string = path.join(process.cwd(), 'resume-data.json');
 export const defaultOutputPath: string = path.join(process.cwd(), 'Mohammad_Margub_Ahmad_Shaikh_CV.pdf');
 
-export function loadResumeData(dataPath: string = defaultDataPath): any {
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+export function normalizeResumeData(data: any): any {
   return {
     ...data,
     careerSummary: data.careerSummary || data.professionalSummary || '',
@@ -22,6 +21,11 @@ export function loadResumeData(dataPath: string = defaultDataPath): any {
     projects: data.projects || [],
     education: data.education || [],
   };
+}
+
+export function loadResumeData(dataPath: string = defaultDataPath): any {
+  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  return normalizeResumeData(data);
 }
 
 export const skillAliases: [string, string[]][] = [
