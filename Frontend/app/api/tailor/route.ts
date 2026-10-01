@@ -21,9 +21,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     writeFileSync(tempPath, JSON.stringify(tailoredData, null, 2));
 
     await new Promise<void>((resolve, reject) => {
+      const workerFile = 'generate-worker.ts';
+      const workerPath = path.join(process.cwd(), 'lib', workerFile);
+      
       execFile(
-        'node',
-        [path.join(process.cwd(), 'lib', 'generate-worker.js'), tempPath],
+        process.platform === 'win32' ? 'npx.cmd' : 'npx',
+        ['tsx', workerPath, tempPath],
         { cwd: process.cwd(), timeout: 30000 },
         (error, _stdout, stderr) => {
           try { unlinkSync(tempPath); } catch { /* ignore */ }
