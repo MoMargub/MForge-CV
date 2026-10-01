@@ -1,0 +1,294 @@
+{
+  "personalInfo": {
+    "name": "JOHN DOE",
+    "title": "Senior Full-Stack Developer",
+    "email": "johndoe@example.com",
+    "phone": "+1 555 123 4567",
+    "linkedin": {
+      "text": "linkedin.com/in/johndoe",
+      "url": "https://linkedin.com/in/johndoe"
+    }
+  },
+  "professionalSummary": "Experienced and results-driven Senior Full-Stack Developer with over 8 years of experience specializing in building scalable web applications. Proficient in Node.js, React, Express, and cloud databases. Strong track record of designing high-performance RESTful APIs, implementing microservices architectures, and optimizing frontend performance for responsive and fluid user experiences.",
+  "technicalSkills": [
+    {
+      "category": "Core / Languages",
+      "details": "JavaScript (ES6+), TypeScript, HTML5, CSS3, Python"
+    },
+    {
+      "category": "Frontend",
+      "details": "React.js, Next.js, Redux Toolkit, Context API, Tailwind CSS, Sass, Bootstrap, Webpack"
+    },
+    {
+      "category": "Backend",
+      "details": "Node.js, Express.js, Nest.js, RESTful APIs, GraphQL, gRPC"
+    },
+    {
+      "category": "Architecture & Design",
+      "details": "MERN Stack, Microservices Architecture, Clean Architecture, Scalable System Design, Design Patterns"
+    },
+    {
+      "category": "Database & Storage",
+      "details": "MongoDB, PostgreSQL, MySQL, Redis, Prisma ORM, Sequelize"
+    },
+    {
+      "category": "Cloud & DevOps",
+      "details": "AWS (S3, EC2, SNS, SQS, Lambda), Docker, Kubernetes, GitHub Actions, CI/CD Pipelines"
+    },
+    {
+      "category": "API & Testing",
+      "details": "Postman, Swagger (OpenAPI), Jest, Mocha, Chai, Supertest, Cypress"
+    },
+    {
+      "category": "Integrations",
+      "details": "Payment Gateways (Stripe, PayPal, Adyen), Auth0, OAuth 2.0, Third-Party REST API Integrations"
+    },
+    {
+      "category": "Tools & Methodology",
+      "details": "Git, GitHub, Agile/Scrum, Jira, VS Code, Slack"
+    }
+  ],
+  "workExperience": [
+    {
+      "company": "Tech Solutions Inc.",
+      "role": "Senior Full-Stack Developer",
+      "location": "San Francisco, CA",
+      "dates": "Jan 2023 – Present",
+      "projects": [
+        {
+          "name": "CloudPortal SaaS Platform — Lead Developer",
+          "highlights": [
+            "Led the migration of the core frontend codebase to React and TypeScript, resulting in a **40% increase** in developer velocity and standardizing clean code practices.",
+            "Designed and implemented robust middleware APIs using Node.js and Express to process high-throughput live data streams with sub-100ms latency.",
+            "Integrated AWS SNS/SQS notification architectures to handle transactional user messaging serving over **50,000 active users**.",
+            "Mentored junior engineers on RESTful API standards, system design concepts, and test-driven development (TDD) methodologies."
+          ]
+        },
+        {
+          "name": "Global Payment Gateway Integration — Principal Engineer",
+          "highlights": [
+            "Architected a multi-region transaction pipeline supporting Stripe and Adyen integrations, handling over **$2M daily processing volume** with zero downtime.",
+            "Implemented token-based authentication and end-to-end request signing, securing payment APIs against cross-site scripting (XSS) and injection attacks.",
+            "Developed automated reconciliation scripts running on cron schedules, reducing transaction audit discrepancies by **95%**."
+          ]
+        }
+      ]
+    },
+    {
+      "company": "Innovative Web Corp",
+      "role": "Software Engineer",
+      "location": "Austin, TX",
+      "dates": "Jun 2019 – Dec 2022",
+      "projects": [
+        {
+          "name": "E-Commerce Integration Suite — Full-Stack Engineer",
+          "highlights": [
+            "Developed reusable component libraries with React and Tailwind CSS, reducing redundant code by **35%** across multiple brand storefronts.",
+            "Created backend integration modules connecting Stripe payment systems with secure Webhook processing and automated retries.",
+            "Optimized SQL query performance in PostgreSQL database, reducing API response times for product catalogs by **25%**.",
+            "Set up automated CI/CD deployment pipelines using GitHub Actions, reducing manual deployment overhead by **90%**."
+          ]
+        },
+        {
+          "name": "Inventory & Fulfillment Engine — Backend Developer",
+          "highlights": [
+            "Designed a real-time event-driven inventory synchronization system using Node.js, Redis, and WebSockets, reducing stock lag times by **80%**.",
+            "Built complex data indexing pipelines in MongoDB, reducing query latency for inventory searches across **500,000 SKUs** down to **12ms**.",
+            "Collaborated in daily agile standups and sprint planning sessions to deliver business-critical features on schedule."
+          ]
+        }
+      ]
+    },
+    {
+      "company": "Apex Software Systems",
+      "role": "Software Developer",
+      "location": "Boston, MA",
+      "dates": "Jun 2017 – May 2019",
+      "projects": [
+        {
+          "name": "Analytics Dashboard — Frontend Lead",
+          "highlights": [
+            "Designed and built an interactive analytics dashboard utilizing React, Chart.js, and Redux, enabling real-time metrics tracking for **100+ business clients**.",
+            "Reduced client bundle size by **22%** using lazy loading, tree shaking, and Webpack optimization techniques.",
+            "Created robust unit test suites using Jest and Enzyme, achieving **90% code coverage** for critical path UI components."
+          ]
+        },
+        {
+          "name": "API Gateway Optimization — Backend Developer",
+          "highlights": [
+            "Refactored legacy API routing layer in Express.js, decreasing routing overhead and improving server throughput by **15%**.",
+            "Implemented JWT-based authentication and role-based access control (RBAC), securing sensitive client data endpoints.",
+            "Maintained clear API endpoints documentation in Swagger, facilitating seamless integrations for external partners."
+          ]
+        }
+      ]
+    }
+  ],
+  "achievements": [
+    "Built and deployed an open-source template generation library, gaining over **500+ GitHub stars**.",
+    "Architected a scalable microservice that handles concurrent image processing, improving processing throughput by **50%**.",
+    "Recognized with the 'Innovation of the Year' award at Innovative Web Corp for developing the automated inventory sync tool."
+  ],
+  "education": [
+    {
+      "degree": "Master of Science, Computer Science",
+      "dates": "2015 – 2017",
+      "institution": "State University, California, USA"
+    },
+    {
+      "degree": "Bachelor of Science, Computer Science",
+      "dates": "2011 – 2015",
+      "institution": "State University, California, USA"
+    }
+  ],
+  "certifications": [
+    "AWS Certified Solutions Architect – Associate (Amazon Web Services)",
+    "Certified ScrumMaster (CSM) – Scrum Alliance",
+    "MongoDB Certified Developer Associate (C100DEV)"
+  ],
+  "careerSummary": "Software Engineer with 4+ years of experience aligned with roles requiring React.js, Next.js, TypeScript, Node.js, Express.js, MongoDB. Experienced and results-driven Senior Full-Stack Developer with over 8 years of experience specializing in building scalable web applications. Proficient in Node.js, React, Express, and cloud databases. Strong track record of designing high-performance RESTful APIs, implementing microservices architectures, and optimizing frontend performance for responsive and fluid user experiences.",
+  "skills": [
+    {
+      "category": "Frontend",
+      "details": "React.js, Next.js, Bootstrap, Redux Toolkit, Context API, Tailwind CSS, Sass, Webpack"
+    },
+    {
+      "category": "Backend",
+      "details": "Node.js, Express.js, Nest.js, RESTful APIs, GraphQL, gRPC"
+    },
+    {
+      "category": "Core / Languages",
+      "details": "TypeScript, JavaScript (ES6+), HTML5, CSS3, Python"
+    },
+    {
+      "category": "Database & Storage",
+      "details": "MongoDB, PostgreSQL, MySQL, Redis, Prisma ORM, Sequelize"
+    },
+    {
+      "category": "Architecture & Design",
+      "details": "MERN Stack, Microservices Architecture, Clean Architecture, Scalable System Design, Design Patterns"
+    },
+    {
+      "category": "Cloud & DevOps",
+      "details": "AWS (S3, EC2, SNS, SQS, Lambda), Docker, Kubernetes, GitHub Actions, CI/CD Pipelines"
+    },
+    {
+      "category": "API & Testing",
+      "details": "Postman, Swagger (OpenAPI), Jest, Mocha, Chai, Supertest, Cypress"
+    },
+    {
+      "category": "Integrations",
+      "details": "Payment Gateways (Stripe, PayPal, Adyen), Auth0, OAuth 2.0, Third-Party REST API Integrations"
+    },
+    {
+      "category": "Tools & Methodology",
+      "details": "Git, GitHub, Agile/Scrum, Jira, VS Code, Slack"
+    }
+  ],
+  "professionalExperience": [
+    {
+      "company": "Tech Solutions Inc.",
+      "role": "Senior Full-Stack Developer",
+      "location": "San Francisco, CA",
+      "dates": "Jan 2023 – Present",
+      "projects": [
+        {
+          "name": "CloudPortal SaaS Platform — Lead Developer",
+          "highlights": [
+            "Led the migration of the core frontend codebase to React and TypeScript, resulting in a **40% increase** in developer velocity and standardizing clean code practices.",
+            "Designed and implemented robust middleware APIs using Node.js and Express to process high-throughput live data streams with sub-100ms latency.",
+            "Integrated AWS SNS/SQS notification architectures to handle transactional user messaging serving over **50,000 active users**.",
+            "Mentored junior engineers on RESTful API standards, system design concepts, and test-driven development (TDD) methodologies."
+          ]
+        },
+        {
+          "name": "Global Payment Gateway Integration — Principal Engineer",
+          "highlights": [
+            "Architected a multi-region transaction pipeline supporting Stripe and Adyen integrations, handling over **$2M daily processing volume** with zero downtime.",
+            "Implemented token-based authentication and end-to-end request signing, securing payment APIs against cross-site scripting (XSS) and injection attacks.",
+            "Developed automated reconciliation scripts running on cron schedules, reducing transaction audit discrepancies by **95%**."
+          ]
+        }
+      ],
+      "title": "Senior Full-Stack Developer",
+      "bullets": [
+        "Led the migration of the core frontend codebase to React and TypeScript, resulting in a **40% increase** in developer velocity and standardizing clean code practices.",
+        "Designed and implemented robust middleware APIs using Node.js and Express to process high-throughput live data streams with sub-100ms latency.",
+        "Mentored junior engineers on RESTful API standards, system design concepts, and test-driven development (TDD) methodologies.",
+        "Developed automated reconciliation scripts running on cron schedules, reducing transaction audit discrepancies by **95%**.",
+        "Integrated AWS SNS/SQS notification architectures to handle transactional user messaging serving over **50,000 active users**.",
+        "Architected a multi-region transaction pipeline supporting Stripe and Adyen integrations, handling over **$2M daily processing volume** with zero downtime.",
+        "Implemented token-based authentication and end-to-end request signing, securing payment APIs against cross-site scripting (XSS) and injection attacks."
+      ]
+    },
+    {
+      "company": "Innovative Web Corp",
+      "role": "Software Engineer",
+      "location": "Austin, TX",
+      "dates": "Jun 2019 – Dec 2022",
+      "projects": [
+        {
+          "name": "E-Commerce Integration Suite — Full-Stack Engineer",
+          "highlights": [
+            "Developed reusable component libraries with React and Tailwind CSS, reducing redundant code by **35%** across multiple brand storefronts.",
+            "Created backend integration modules connecting Stripe payment systems with secure Webhook processing and automated retries.",
+            "Optimized SQL query performance in PostgreSQL database, reducing API response times for product catalogs by **25%**.",
+            "Set up automated CI/CD deployment pipelines using GitHub Actions, reducing manual deployment overhead by **90%**."
+          ]
+        },
+        {
+          "name": "Inventory & Fulfillment Engine — Backend Developer",
+          "highlights": [
+            "Designed a real-time event-driven inventory synchronization system using Node.js, Redis, and WebSockets, reducing stock lag times by **80%**.",
+            "Built complex data indexing pipelines in MongoDB, reducing query latency for inventory searches across **500,000 SKUs** down to **12ms**.",
+            "Collaborated in daily agile standups and sprint planning sessions to deliver business-critical features on schedule."
+          ]
+        }
+      ],
+      "title": "Software Engineer",
+      "bullets": [
+        "Developed reusable component libraries with React and Tailwind CSS, reducing redundant code by **35%** across multiple brand storefronts.",
+        "Designed a real-time event-driven inventory synchronization system using Node.js, Redis, and WebSockets, reducing stock lag times by **80%**.",
+        "Built complex data indexing pipelines in MongoDB, reducing query latency for inventory searches across **500,000 SKUs** down to **12ms**.",
+        "Created backend integration modules connecting Stripe payment systems with secure Webhook processing and automated retries.",
+        "Optimized SQL query performance in PostgreSQL database, reducing API response times for product catalogs by **25%**.",
+        "Set up automated CI/CD deployment pipelines using GitHub Actions, reducing manual deployment overhead by **90%**.",
+        "Collaborated in daily agile standups and sprint planning sessions to deliver business-critical features on schedule."
+      ]
+    },
+    {
+      "company": "Apex Software Systems",
+      "role": "Software Developer",
+      "location": "Boston, MA",
+      "dates": "Jun 2017 – May 2019",
+      "projects": [
+        {
+          "name": "Analytics Dashboard — Frontend Lead",
+          "highlights": [
+            "Designed and built an interactive analytics dashboard utilizing React, Chart.js, and Redux, enabling real-time metrics tracking for **100+ business clients**.",
+            "Reduced client bundle size by **22%** using lazy loading, tree shaking, and Webpack optimization techniques.",
+            "Created robust unit test suites using Jest and Enzyme, achieving **90% code coverage** for critical path UI components."
+          ]
+        },
+        {
+          "name": "API Gateway Optimization — Backend Developer",
+          "highlights": [
+            "Refactored legacy API routing layer in Express.js, decreasing routing overhead and improving server throughput by **15%**.",
+            "Implemented JWT-based authentication and role-based access control (RBAC), securing sensitive client data endpoints.",
+            "Maintained clear API endpoints documentation in Swagger, facilitating seamless integrations for external partners."
+          ]
+        }
+      ],
+      "title": "Software Developer",
+      "bullets": [
+        "Designed and built an interactive analytics dashboard utilizing React, Chart.js, and Redux, enabling real-time metrics tracking for **100+ business clients**.",
+        "Created robust unit test suites using Jest and Enzyme, achieving **90% code coverage** for critical path UI components.",
+        "Refactored legacy API routing layer in Express.js, decreasing routing overhead and improving server throughput by **15%**.",
+        "Implemented JWT-based authentication and role-based access control (RBAC), securing sensitive client data endpoints.",
+        "Maintained clear API endpoints documentation in Swagger, facilitating seamless integrations for external partners.",
+        "Reduced client bundle size by **22%** using lazy loading, tree shaking, and Webpack optimization techniques."
+      ]
+    }
+  ],
+  "projects": []
+}
