@@ -6,7 +6,12 @@ export const defaultDataPath: string = path.join(process.cwd(), 'resume-data.jso
 export const defaultOutputPath: string = path.join(process.cwd(), 'Mohammad_Margub_Ahmad_Shaikh_CV.pdf');
 
 export function loadResumeData(dataPath: string = defaultDataPath): any {
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  let data: any = {};
+  try {
+    data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } catch (e) {
+    // Return empty if file not found to prevent ENOENT crashes
+  }
   return {
     ...data,
     careerSummary: data.careerSummary || data.professionalSummary || '',

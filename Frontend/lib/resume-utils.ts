@@ -24,7 +24,12 @@ export function normalizeResumeData(data: any): any {
 }
 
 export function loadResumeData(dataPath: string = defaultDataPath): any {
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  let data: any = {};
+  try {
+    data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } catch (e) {
+    // Return empty if file not found to prevent ENOENT crashes
+  }
   return normalizeResumeData(data);
 }
 

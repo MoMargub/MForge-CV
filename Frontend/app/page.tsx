@@ -34,19 +34,25 @@ interface UploadPreview {
 }
 
 interface ResumeData {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  location: string;
-  github: string;
-  summary: string;
-  experience: Array<{
-    title: string;
-    company: string;
-    dates: string;
-    bullets: string[];
+  personalInfo?: {
+    name?: string;
+    title?: string;
+    email?: string;
+    phone?: string;
+    linkedin?: { text?: string; url?: string };
+    location?: string;
+  };
+  professionalSummary?: string;
+  technicalSkills?: Array<{ category: string; details: string }>;
+  professionalExperience?: Array<{
+    title?: string;
+    company?: string;
+    dates?: string;
+    location?: string;
+    bullets?: string[];
   }>;
+  projects?: Array<{ name?: string; description?: string; bullets?: string[] }>;
+  education?: Array<{ degree?: string; institution?: string; dates?: string; location?: string }>;
 }
 
 type JdTab = 'upload' | 'paste' | 'url';
@@ -504,36 +510,36 @@ const CvPanel = React.memo(({
       ) : resumeData ? (
         <>
           <div className="resume-doc" aria-label="Resume preview">
-            <div className="resume-doc__name">{resumeData.name}</div>
-            <div className="resume-doc__title-badge">{resumeData.title}</div>
+            <div className="resume-doc__name">{resumeData.personalInfo?.name}</div>
+            <div className="resume-doc__title-badge">{resumeData.personalInfo?.title}</div>
             <div className="resume-doc__contact">
-              {resumeData.email && (
-                <div className="resume-doc__contact-item">✉ {resumeData.email}</div>
+              {resumeData.personalInfo?.email && (
+                <div className="resume-doc__contact-item">✉ {resumeData.personalInfo.email}</div>
               )}
-              {resumeData.phone && (
-                <div className="resume-doc__contact-item">📞 {resumeData.phone}</div>
+              {resumeData.personalInfo?.phone && (
+                <div className="resume-doc__contact-item">📞 {resumeData.personalInfo.phone}</div>
               )}
-              {resumeData.location && (
-                <div className="resume-doc__contact-item">📍 {resumeData.location}</div>
+              {resumeData.personalInfo?.location && (
+                <div className="resume-doc__contact-item">📍 {resumeData.personalInfo.location}</div>
               )}
-              {resumeData.github && (
-                <div className="resume-doc__contact-item">🔗 {resumeData.github}</div>
+              {resumeData.personalInfo?.linkedin?.url && (
+                <div className="resume-doc__contact-item">🔗 {resumeData.personalInfo.linkedin.url}</div>
               )}
             </div>
 
-            {resumeData.summary && (
+            {resumeData.professionalSummary && (
               <>
                 <hr className="resume-doc__divider" />
                 <div className="resume-doc__section-title">Professional Summary</div>
-                <p className="resume-doc__summary">{resumeData.summary}</p>
+                <p className="resume-doc__summary">{resumeData.professionalSummary}</p>
               </>
             )}
 
-            {resumeData.experience.length > 0 && (
+            {(resumeData.professionalExperience?.length || 0) > 0 && (
               <>
                 <hr className="resume-doc__divider" />
                 <div className="resume-doc__section-title">Work Experience</div>
-                {resumeData.experience.map((exp, i) => (
+                {resumeData.professionalExperience?.map((exp: any, i: number) => (
                   <div key={i} className="resume-doc__exp">
                     <div className="resume-doc__exp-header">
                       <div>
@@ -543,9 +549,9 @@ const CvPanel = React.memo(({
                       </div>
                       <div className="resume-doc__exp-dates">{exp.dates}</div>
                     </div>
-                    {exp.bullets.length > 0 && (
+                    {(exp.bullets?.length || 0) > 0 && (
                       <ul className="resume-doc__bullets">
-                        {exp.bullets.slice(0, 3).map((b, j) => <li key={j}>{b}</li>)}
+                        {exp.bullets.slice(0, 3).map((b: string, j: number) => <li key={j}>{b}</li>)}
                       </ul>
                     )}
                   </div>
