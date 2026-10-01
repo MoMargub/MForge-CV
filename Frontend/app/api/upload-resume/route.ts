@@ -1,17 +1,5 @@
-import { writeFileSync } from 'fs';
-import path from 'path';
-import { createRequire } from 'module';
 import type { NextRequest } from 'next/server';
-
-const require = createRequire(import.meta.url);
-// pdf-parse v2: data is passed in the constructor options, not to getText()
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { PDFParse } = require('pdf-parse') as {
-  PDFParse: new (opts: { verbosity: number; data?: Uint8Array }) => {
-    getText(opts?: Record<string, unknown>): Promise<{ text: string }>;
-  };
-};
-
+import path from 'path';
 interface UploadPreview {
   name: string;
   email: string;
@@ -65,9 +53,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     let rawText = '';
 
     if (isPdf) {
-      // pdf-parse v2: `data` goes in constructor; getText() takes no document arg
-      const parser = new PDFParse({ verbosity: 0, data: new Uint8Array(buffer) });
-      const result = await parser.getText();
+      const pdfParseModule = await import('pdf-parse');
+      const pdf = pdfParseModule.default || pdfParseModule;
+      const result = await pdf(buffer);
       rawText = result.text ?? '';
     } else {
       rawText = extractDocxText(buffer);
