@@ -1,7 +1,3 @@
-/**
- * Resume utility functions (pure logic, no puppeteer dependency).
- * Safe to import from Next.js API routes.
- */
 import fs from 'fs';
 import path from 'path';
 import { skillAliases } from '../types';
