@@ -1,164 +1,127 @@
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
-
-// ── Types ──────────────────────────────────────────────────────────────────
-
-interface AtsBreakdown {
-  skills: number;
-  summary: number;
-  experience: number;
-  projects: number;
-  format: number;
-  density: number;
-}
-
-interface AtsResult {
-  score: number;
-  breakdown: AtsBreakdown;
-  matchedSkills?: string[];
-  missingSkills?: string[];
-}
-
-interface StatusMsg {
-  type: 'success' | 'error';
-  text: string;
-}
-
-interface UploadPreview {
-  name: string;
-  email: string;
-  phone: string;
-  skillCount: number;
-  experienceCount: number;
-}
-
-interface ResumeData {
-  personalInfo?: {
-    name?: string;
-    title?: string;
-    email?: string;
-    phone?: string;
-    linkedin?: { text?: string; url?: string };
-    location?: string;
-  };
-  professionalSummary?: string;
-  technicalSkills?: Array<{ category: string; details: string }>;
-  professionalExperience?: Array<{
-    title?: string;
-    company?: string;
-    dates?: string;
-    location?: string;
-    bullets?: string[];
-  }>;
-  projects?: Array<{ name?: string; description?: string; bullets?: string[] }>;
-  education?: Array<{ degree?: string; institution?: string; dates?: string; location?: string }>;
-}
-
-type JdTab = 'upload' | 'paste' | 'url';
+import {
+  useUploadResumeMutation,
+  useScoreResumeMutation,
+  useTailorResumeMutation,
+  useUploadResumeNextMutation,
+} from '@/lib/api';
+import type { AtsResult, UploadResumePreview, ResumeData, StatusMsg, JdTab } from '@/types';
 
 // ── Hooks ──────────────────────────────────────────────────────────────────
 
+/**
+ * Wraps FastAPI ATS scoring mutation + local Next.js tailor mutation via TanStack Query.
+ */
 function useJdTailor(resumeData: ResumeData | null) {
   const [jd, setJd] = useState('');
-  const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<StatusMsg | null>(null);
-  const [ats, setAts] = useState<AtsResult | null>(null);
   const [matchedSkills, setMatchedSkills] = useState<string[]>([]);
   const [hasGenerated, setHasGenerated] = useState(false);
 
-  const call = useCallback(
-    async (endpoint: string, onSuccess: (d: Record<string, unknown>) => void) => {
+  // ── TanStack Query Mutations ─────────────────────────────────────────────
+  const scoreMutation = useScoreResumeMutation();
+  const tailorMutation = useTailorResumeMutation();
+
+  const handleScore = useCallback(
+    (e?: React.MouseEvent) => {
+      e?.preventDefault();
       const trimmed = jd.trim();
       if (!trimmed) {
         setStatus({ type: 'error', text: 'Please paste a Job Description first.' });
         return;
       }
-      setLoading(true);
       setStatus(null);
-      try {
-        const fd = new FormData();
-        fd.append('jd', trimmed);
-        if (resumeData) {
-          fd.append('resumeData', JSON.stringify(resumeData));
+      scoreMutation.mutate(
+        { jd: trimmed, resumeData: resumeData ? JSON.stringify(resumeData) : undefined },
+        {
+          onSuccess: (data) => {
+            setMatchedSkills(data.ats.matchedSkills ?? []);
+            setStatus({ type: 'success', text: data.status });
+          },
+          onError: (err) => setStatus({ type: 'error', text: err.message }),
         }
-        const res = await fetch(endpoint, { method: 'POST', body: fd });
-        const data = await res.json() as Record<string, unknown>;
-        if (!res.ok) throw new Error((data.error as string) || `Error ${res.status}`);
-        onSuccess(data);
-        const statusText = (data.status as string | undefined) ?? '';
-        if (statusText) setStatus({ type: 'success', text: statusText });
-      } catch (e) {
-        setStatus({ type: 'error', text: e instanceof Error ? e.message : 'Unexpected error.' });
-      } finally {
-        setLoading(false);
-      }
+      );
     },
-    [jd, resumeData]
-  );
-
-  const handleScore = useCallback(
-    (e?: React.MouseEvent) => {
-      e?.preventDefault();
-      call('/api/score', (d) => {
-        const a = d.ats as AtsResult;
-        setAts(a);
-        setMatchedSkills((d.matchedSkills as string[] | undefined) ?? a?.matchedSkills ?? []);
-      });
-    },
-    [call]
+    [jd, resumeData, scoreMutation]
   );
 
   const handleTailor = useCallback(
     (e?: React.MouseEvent) => {
       e?.preventDefault();
-      call('/api/tailor', (d) => {
-        setMatchedSkills((d.matchedSkills as string[] | undefined) ?? []);
-        setHasGenerated(true);
-      });
+      const trimmed = jd.trim();
+      if (!trimmed) {
+        setStatus({ type: 'error', text: 'Please paste a Job Description first.' });
+        return;
+      }
+      setStatus(null);
+      tailorMutation.mutate(
+        { jd: trimmed, resumeData: resumeData ? JSON.stringify(resumeData) : undefined },
+        {
+          onSuccess: (data) => {
+            setMatchedSkills(data.matchedSkills ?? []);
+            setHasGenerated(true);
+            setStatus({ type: 'success', text: data.status });
+          },
+          onError: (err) => setStatus({ type: 'error', text: err.message }),
+        }
+      );
     },
-    [call]
+    [jd, resumeData, tailorMutation]
   );
+
+  const loading = scoreMutation.isPending || tailorMutation.isPending;
+  const ats = scoreMutation.data?.ats ?? null;
 
   return { jd, setJd, loading, status, ats, matchedSkills, hasGenerated, handleScore, handleTailor };
 }
 
+/**
+ * Wraps FastAPI resume upload mutation + Next.js upload parser mutation via TanStack Query.
+ */
 function useResumeUploader() {
   const [uploadStatus, setUploadStatus] = useState<StatusMsg | null>(null);
-  const [uploading, setUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number } | null>(null);
-  const [preview, setPreview] = useState<UploadPreview | null>(null);
+  const [preview, setPreview] = useState<UploadResumePreview | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
 
-  const handleUpload = useCallback(async (file: File) => {
-    const ext = file.name.split('.').pop()?.toLowerCase();
-    if (ext !== 'pdf' && ext !== 'docx') {
-      setUploadStatus({ type: 'error', text: 'Only .pdf or .docx files are accepted.' });
-      return;
-    }
-    setUploading(true);
-    setUploadStatus(null);
-    setPreview(null);
-    try {
-      const fd = new FormData();
-      fd.append('resumeFile', file);
-      const res = await fetch('/api/upload-resume', { method: 'POST', body: fd });
-      const data = await res.json() as Record<string, unknown>;
-      if (!res.ok) throw new Error((data.error as string) || 'Upload failed.');
-      setUploadedFile({ name: file.name, size: file.size });
-      const p = data.preview as UploadPreview | undefined;
-      if (p) {
-        setPreview(p);
-        setResumeData(data.resumeData as ResumeData);
+  // TanStack Query Mutations
+  const uploadFastApiMutation = useUploadResumeMutation();
+  const uploadNextMutation = useUploadResumeNextMutation();
+
+  const handleUpload = useCallback(
+    async (file: File) => {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext !== 'pdf' && ext !== 'docx') {
+        setUploadStatus({ type: 'error', text: 'Only .pdf or .docx files are accepted.' });
+        return;
       }
-      setUploadStatus({ type: 'success', text: (data.status as string) ?? '✅ Resume uploaded!' });
-    } catch (e) {
-      setUploadStatus({ type: 'error', text: e instanceof Error ? e.message : 'Upload failed.' });
-    } finally {
-      setUploading(false);
-    }
-  }, []);
+      setUploadStatus(null);
+      setPreview(null);
+      setUploadedFile({ name: file.name, size: file.size });
+
+      // 1. Call FastAPI for experience calculation + skill preview
+      uploadFastApiMutation.mutate(file, {
+        onSuccess: (data) => {
+          setPreview(data.preview);
+          setUploadStatus({ type: 'success', text: data.status });
+        },
+        onError: (err) => setUploadStatus({ type: 'error', text: err.message }),
+      });
+
+      // 2. Call Next.js route for full structured resume JSON
+      uploadNextMutation.mutate(file, {
+        onSuccess: (data) => {
+          if (data.resumeData) {
+            setResumeData(data.resumeData);
+          }
+        },
+      });
+    },
+    [uploadFastApiMutation, uploadNextMutation]
+  );
 
   const onDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); }, []);
   const onDragLeave = useCallback(() => setIsDragging(false), []);
@@ -170,8 +133,16 @@ function useResumeUploader() {
   }, [handleUpload]);
 
   return {
-    uploadStatus, uploading, uploadedFile, preview, isDragging, resumeData,
-    handleUpload, onDragOver, onDragLeave, onDrop,
+    uploadStatus,
+    uploading: uploadFastApiMutation.isPending || uploadNextMutation.isPending,
+    uploadedFile,
+    preview,
+    isDragging,
+    resumeData,
+    handleUpload,
+    onDragOver,
+    onDragLeave,
+    onDrop,
   };
 }
 
@@ -442,6 +413,7 @@ JdPanel.displayName = 'JdPanel';
 
 interface CvPanelProps {
   resumeData: ResumeData | null;
+  preview: UploadResumePreview | null;
   uploading: boolean;
   uploadedFile: { name: string; size: number } | null;
   uploadStatus: StatusMsg | null;
@@ -453,7 +425,7 @@ interface CvPanelProps {
 }
 
 const CvPanel = React.memo(({
-  resumeData, uploading, uploadedFile, uploadStatus,
+  resumeData, preview, uploading, uploadedFile, uploadStatus,
   isDragging, onUpload, onDragOver, onDragLeave, onDrop,
 }: CvPanelProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -513,8 +485,10 @@ const CvPanel = React.memo(({
               {resumeData.personalInfo?.location && (
                 <div className="resume-doc__contact-item">📍 {resumeData.personalInfo.location}</div>
               )}
-              {resumeData.personalInfo?.linkedin?.url && (
-                <div className="resume-doc__contact-item">🔗 {resumeData.personalInfo.linkedin.url}</div>
+              {resumeData.personalInfo?.linkedin && (
+                <div className="resume-doc__contact-item">
+                  🔗 {typeof resumeData.personalInfo.linkedin === 'string' ? resumeData.personalInfo.linkedin : resumeData.personalInfo.linkedin.url}
+                </div>
               )}
             </div>
 
@@ -549,6 +523,30 @@ const CvPanel = React.memo(({
                 ))}
               </>
             )}
+            {/* FastAPI experience badge */}
+            {preview && (
+              <div style={{ marginTop: '12px', padding: '10px 14px', background: 'var(--surface-2, #1e2030)', borderRadius: '10px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-2)' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-1)' }}>⏱ Experience</span><br />
+                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#4f46e5' }}>
+                    {preview.experience?.years ?? preview.experienceYears ?? 0}y {preview.experience?.months ?? preview.experienceMonths ?? 0}m
+                  </span>
+                  <span style={{ marginLeft: 6, opacity: 0.6 }}>
+                    ({preview.experience?.totalMonths ?? preview.experienceTotalMonths ?? 0} months total)
+                  </span>
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-2)' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-1)' }}>🛠 Skills Detected</span><br />
+                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#4f46e5' }}>{preview.skillCount}</span>
+                  {preview.skills && preview.skills.length > 0 && (
+                    <span style={{ marginLeft: 6, opacity: 0.6 }}>
+                      {preview.skills.slice(0, 3).join(', ')}{preview.skills.length > 3 ? '…' : ''}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
 
           <div className="cv-footer">
@@ -588,13 +586,14 @@ const AtsSection = React.memo(({ ats, matchedSkills }: { ats: AtsResult; matched
   const label = ats.score >= 80 ? 'High Pass' : ats.score >= 60 ? 'Good Match' : 'Needs Work';
   const tier = ats.score >= 80 ? 'Top 8% Fit' : ats.score >= 60 ? 'Top 25% Fit' : 'Below Average';
 
+  const breakdown = ats.breakdown ?? { skills: 0, summary: 0, experience: 0, projects: 0, format: 0, density: 0 };
   const breakdownItems = [
-    { label: 'Skills Match', value: ats.breakdown.skills, max: 45 },
-    { label: 'Summary Match', value: ats.breakdown.summary, max: 15 },
-    { label: 'Experience Match', value: ats.breakdown.experience, max: 20 },
-    { label: 'Projects Match', value: ats.breakdown.projects, max: 10 },
-    { label: 'Format', value: ats.breakdown.format, max: 5 },
-    { label: 'Keyword Density', value: ats.breakdown.density, max: 5 },
+    { label: 'Skills Match', value: breakdown.skills, max: 45 },
+    { label: 'Summary Match', value: breakdown.summary, max: 15 },
+    { label: 'Experience Match', value: breakdown.experience, max: 20 },
+    { label: 'Projects Match', value: breakdown.projects, max: 10 },
+    { label: 'Format', value: breakdown.format, max: 5 },
+    { label: 'Keyword Density', value: breakdown.density, max: 5 },
   ];
 
   const matched = matchedSkills.length;
@@ -691,7 +690,7 @@ AtsSection.displayName = 'AtsSection';
 
 export default function Page() {
   const {
-    uploadStatus, uploading, uploadedFile, resumeData, isDragging,
+    uploadStatus, uploading, uploadedFile, resumeData, isDragging, preview,
     handleUpload, onDragOver, onDragLeave, onDrop,
   } = useResumeUploader();
   
@@ -741,6 +740,7 @@ export default function Page() {
 
           <CvPanel
             resumeData={resumeData}
+            preview={preview}
             uploading={uploading}
             uploadedFile={uploadedFile}
             uploadStatus={uploadStatus}

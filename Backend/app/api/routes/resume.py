@@ -16,7 +16,8 @@ async def upload_resume(
     resumeFile: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    preview = ResumeService.process_uploaded_resume(resumeFile.filename)
+    file_bytes = await resumeFile.read()
+    preview = ResumeService.process_uploaded_resume(resumeFile.filename, file_bytes)
     return {
         "status": "success",
         "message": f"File {resumeFile.filename} received and parsed.",

@@ -1,3 +1,5 @@
+// ── Domain Models ──────────────────────────────────────────────────────────
+
 export interface PersonalInfo {
   name: string;
   title: string;
@@ -45,6 +47,8 @@ export interface ResumeData {
   education?: Education[];
 }
 
+// ── ATS & Parsing Models ───────────────────────────────────────────────────
+
 export interface AtsScoreBreakdown {
   skills: number;
   summary: number;
@@ -60,7 +64,82 @@ export interface AtsScoreResult {
   matchedSkills: string[];
   missingSkills: string[];
   jdSkills: string[];
+  suggestions?: string[];
 }
+
+export interface AtsResult {
+  score: number;
+  breakdown?: AtsScoreBreakdown;
+  matchedSkills?: string[];
+  missingSkills?: string[];
+  jdSkills?: string[];
+  suggestions?: string[];
+}
+
+// ── API & UI State Models ─────────────────────────────────────────────────
+
+export interface StatusMsg {
+  type: 'success' | 'error' | 'info';
+  text: string;
+}
+
+export type JdTab = 'paste' | 'upload' | 'url' | 'input' | 'preview' | 'diff';
+
+export interface UploadResumePreview {
+  name: string;
+  email: string;
+  phone: string;
+  skillCount: number;
+  experienceCount: number;
+  experienceYears?: number;
+  experienceMonths?: number;
+  experienceTotalMonths?: number;
+  experienceFormatted?: string;
+  experience?: {
+    years: number;
+    months: number;
+    totalMonths: number;
+    formatted: string;
+  };
+  skills?: string[];
+}
+
+export type UploadPreview = UploadResumePreview;
+export type ResumeJsonData = ResumeData;
+
+export interface UploadResumeResponse {
+  status: string;
+  message?: string;
+  filename?: string;
+  preview: UploadResumePreview;
+  resumeData?: ResumeData;
+  success?: boolean;
+}
+
+export interface ScoreResumeResponse {
+  status: string;
+  ats: AtsResult;
+  matchedSkills?: string[];
+  jd?: string;
+  success?: boolean;
+}
+
+export interface TailorResumeResponse {
+  status: string;
+  generated: boolean;
+  matchedSkills?: string[];
+  jd?: string;
+  error?: string;
+}
+
+export interface ApiErrorResponse {
+  error?: string;
+  message?: string;
+  detail?: string | Array<{ msg: string; loc?: string[] }>;
+  status?: number;
+}
+
+// ── Constants & Aliases ───────────────────────────────────────────────────
 
 export const skillAliases: [string, string[]][] = [
   ['React.js', ['react', 'reactjs', 'react.js']],
@@ -98,4 +177,3 @@ export const skillAliases: [string, string[]][] = [
   ['SaaS', ['saas']],
   ['Agile', ['agile', 'scrum']],
 ];
-

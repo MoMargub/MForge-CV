@@ -1,34 +1,6 @@
 import type { NextRequest } from 'next/server';
 import path from 'path';
-interface UploadPreview {
-  name: string;
-  email: string;
-  phone: string;
-  skillCount: number;
-  experienceCount: number;
-}
-
-interface ResumeJsonData {
-  personalInfo: {
-    name: string;
-    title: string;
-    email: string;
-    phone: string;
-    linkedin: { text: string; url: string };
-    location: string;
-  };
-  professionalSummary: string;
-  technicalSkills: Array<{ category: string; details: string }>;
-  professionalExperience: Array<{
-    title: string;
-    company: string;
-    dates: string;
-    location: string;
-    bullets: string[];
-  }>;
-  projects: Array<{ name: string; description: string; bullets: string[] }>;
-  education: Array<{ degree: string; institution: string; dates: string; location: string }>;
-}
+import type { UploadPreview, ResumeJsonData, ProfessionalExperience, Project, Education } from '@/types';
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
@@ -186,8 +158,8 @@ function parseResumeText(text: string, fileName: string): ResumeJsonData {
 }
 
 function parseExperience(lines: string[]) {
-  const results: ResumeJsonData['professionalExperience'] = [];
-  let current: ResumeJsonData['professionalExperience'][number] | null = null;
+  const results: ProfessionalExperience[] = [];
+  let current: ProfessionalExperience | null = null;
   const dateRe = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?\s*\d{4}\s*[-–—]\s*(?:\w+\s+)?\d{4}|(?:\w{3})\s+\d{4}\s*[-–—]\s*(?:Present|Current)|(?:\b\d{4}\s*[-–—]\s*(?:Present|Current|\d{4})\b)/i;
 
   let pendingHeaderLines: string[] = [];
@@ -239,8 +211,8 @@ function parseExperience(lines: string[]) {
 }
 
 function parseProjects(lines: string[]) {
-  const results: ResumeJsonData['projects'] = [];
-  let current: ResumeJsonData['projects'][number] | null = null;
+  const results: Project[] = [];
+  let current: Project | null = null;
   for (const line of lines) {
     const isBullet = /^[•\-*]/.test(line);
     if (!isBullet && line.length < 80 && line.length > 3 && !/^https?:/i.test(line)) {
@@ -257,8 +229,8 @@ function parseProjects(lines: string[]) {
 }
 
 function parseEducation(lines: string[]) {
-  const results: ResumeJsonData['education'] = [];
-  let current: ResumeJsonData['education'][number] | null = null;
+  const results: Education[] = [];
+  let current: Education | null = null;
   const dateRe = /\d{4}\s*[-–—]\s*\d{4}|\d{4}/;
   for (const line of lines) {
     if (dateRe.test(line)) {

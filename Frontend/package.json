@@ -19,6 +19,8 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query-devtools": "^5.104.1",
     "docx": "^8.5.0",
     "next": "^16.3.5",
     "pdf-parse": "^1.1.1",
