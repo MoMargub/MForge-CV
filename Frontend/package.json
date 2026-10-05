@@ -4,7 +4,7 @@
   "description": "Generate professional Word Document (DOCX) resumes from a simple JSON data structure.",
   "main": "generate.js",
   "scripts": {
-    "start": "node generate.js",
+    "start": "next start",
     "web": "next dev",
     "build": "next build",
     "start-next": "next start"
