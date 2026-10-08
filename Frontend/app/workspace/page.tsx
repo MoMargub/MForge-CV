@@ -222,7 +222,7 @@ const JdPanel = React.memo(({
           <span aria-hidden="true">📄</span> Target Job Description
         </h2>
         <div className="panel__actions">
-          {(['upload', 'paste', 'url'] as JdTab[]).map((tab) => (
+          {(['paste', 'upload', 'url'] as JdTab[]).map((tab) => (
             <button
               key={tab}
               className={`jd-tab${activeTab === tab ? ' jd-tab--active' : ''}`}
@@ -613,7 +613,7 @@ const AtsSection = React.memo(({ ats, matchedSkills }: { ats: AtsResult; matched
 
       <div className="ats-cards" role="list">
         <div className="ats-card" role="listitem">
-          <div className="ats-card__score-box ats-card__score-box--green" aria-label={`ATS score: ${ats.score}`}>
+          <div className={`ats-card__score-box ats-card__score-box--${ats.score >= 80 ? 'green' : ats.score >= 60 ? 'amber' : 'red'}`} aria-label={`ATS score: ${ats.score}`}>
             {ats.score}
           </div>
           <div>
@@ -696,7 +696,7 @@ export default function Page() {
   
   const { jd, setJd, loading, status, ats, matchedSkills, hasGenerated, handleScore, handleTailor } = useJdTailor(resumeData);
 
-  const [activeTab, setActiveTab] = useState<JdTab>('upload');
+  const [activeTab, setActiveTab] = useState<JdTab>('paste');
   const [jdFile, setJdFile] = useState<{ name: string; size: number } | null>(null);
 
   const handleJdFileUpload = useCallback(async (file: File) => {

@@ -77,7 +77,8 @@ export function tailorResumeData(data: any, jdText: string = ''): any {
   const tailored = structuredClone(data);
   const topSkills = matchedSkills.slice(0, 8).join(', ');
 
-  tailored.careerSummary = `Software Engineer with 4+ years of experience aligned with roles requiring ${topSkills}. ${data.careerSummary}`;
+  const title = data.personalInfo?.title || 'Professional';
+  tailored.careerSummary = `${title} aligned with roles requiring ${topSkills}. ${data.careerSummary}`;
 
   tailored.skills = reorderByScore(
     tailored.skills.map((skill: any) => ({

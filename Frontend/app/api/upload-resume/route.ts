@@ -97,14 +97,129 @@ function parseResumeText(text: string, fileName: string): ResumeJsonData {
   const nameLine      = lines.find(l => /^[A-Z][a-z]+(?: [A-Z][a-z]+){1,4}$/.test(l));
 
   const titlePatterns = [
-    /Software\s+Engineer/i, /Full.Stack\s+Developer/i, /Frontend\s+Developer/i,
-    /Backend\s+Developer/i, /Web\s+Developer/i, /Data\s+Engineer/i,
-    /DevOps\s+Engineer/i, /ML\s+Engineer/i,
+    // Engineering & Tech
+    /Software\s+Engineer(?:ing)?/i,
+    /Full[\s-]?Stack\s+Developer/i,
+    /Frontend\s+Developer/i,
+    /Back[\s-]?end\s+Developer/i,
+    /Web\s+Developer/i,
+    /Mobile\s+Developer/i,
+    /Data\s+Engineer/i,
+    /Data\s+Scientist/i,
+    /Data\s+Analyst/i,
+    /DevOps\s+Engineer/i,
+    /ML\s+Engineer/i,
+    /Machine\s+Learning\s+Engineer/i,
+    /AI\s+Engineer/i,
+    /Cloud\s+Engineer/i,
+    /Systems?\s+Engineer/i,
+    /QA\s+Engineer/i,
+    /Security\s+Engineer/i,
+    /Network\s+Engineer/i,
+    /Embedded\s+Engineer/i,
+    /Platform\s+Engineer/i,
+    /Site\s+Reliability\s+Engineer/i,
+    /Software\s+Developer/i,
+    /Application\s+Developer/i,
+    // Management & Leadership
+    /Product\s+Manager/i,
+    /Project\s+Manager/i,
+    /Program\s+Manager/i,
+    /Engineering\s+Manager/i,
+    /Chief\s+(?:Executive|Technology|Operating|Financial|Marketing|Information)\s+Officer/i,
+    /(?:Vice\s+President|VP)\s+of\s+\w+/i,
+    /Director\s+of\s+\w+/i,
+    /Head\s+of\s+\w+/i,
+    // Business & Operations
+    /Sales\s+Executive/i,
+    /Sales\s+Manager/i,
+    /Sales\s+Representative/i,
+    /Business\s+Analyst/i,
+    /Business\s+Development\s+(?:Manager|Executive)/i,
+    /Account\s+(?:Manager|Executive)/i,
+    /Operations\s+Manager/i,
+    /Operations\s+Executive/i,
+    /Customer\s+Success\s+Manager/i,
+    /Customer\s+Service\s+(?:Representative|Executive|Manager)/i,
+    /Marketing\s+Manager/i,
+    /Marketing\s+Executive/i,
+    /Digital\s+Marketing\s+(?:Manager|Specialist|Executive)/i,
+    /Brand\s+Manager/i,
+    /Content\s+(?:Writer|Manager|Strategist)/i,
+    // Finance & Accounting
+    /Finance\s+Manager/i,
+    /Financial\s+Analyst/i,
+    /Accountant/i,
+    /Senior\s+Accountant/i,
+    /Chief\s+Accountant/i,
+    /Chartered\s+Accountant/i,
+    /Audit(?:or|ing\s+Manager)?/i,
+    /Tax\s+(?:Consultant|Manager|Analyst)/i,
+    /Payroll\s+(?:Specialist|Manager)/i,
+    // HR & Admin
+    /Human\s+Resources\s+(?:Manager|Specialist|Executive)/i,
+    /HR\s+(?:Manager|Specialist|Executive|Business\s+Partner)/i,
+    /Talent\s+Acquisition\s+(?:Specialist|Manager)/i,
+    /Recruiter/i,
+    /Administrative\s+(?:Assistant|Manager|Executive)/i,
+    // Healthcare
+    /(?:Medical|Clinical)\s+Officer/i,
+    /Nurse\s+(?:Practitioner|Manager)?/i,
+    /Pharmacist/i,
+    /Physician/i,
+    /Doctor/i,
+    // Design & Creative
+    /UI\/UX\s+Designer/i,
+    /UX\s+Designer/i,
+    /Graphic\s+Designer/i,
+    /Creative\s+Director/i,
+    /Art\s+Director/i,
+    /Motion\s+Designer/i,
+    /Product\s+Designer/i,
+    // Education
+    /(?:Senior\s+)?Lecturer/i,
+    /Professor/i,
+    /Teacher/i,
+    /Instructor/i,
+    /Trainer/i,
+    /Educational\s+Consultant/i,
+    // Logistics & Supply Chain
+    /Supply\s+Chain\s+(?:Manager|Analyst)/i,
+    /Logistics\s+(?:Manager|Coordinator|Executive)/i,
+    /Procurement\s+(?:Manager|Specialist|Officer)/i,
+    /Warehouse\s+Manager/i,
+    // Construction & Engineering (non-software)
+    /Civil\s+Engineer/i,
+    /Structural\s+Engineer/i,
+    /Mechanical\s+Engineer/i,
+    /Electrical\s+Engineer/i,
+    /Chemical\s+Engineer/i,
+    /Project\s+Engineer/i,
+    // General executive patterns (last resort before fallback)
+    /(?:Senior|Junior|Associate|Assistant|Lead|Principal|Executive|Chief)\s+[A-Z][a-zA-Z\s]{3,40}/,
   ];
   let jobTitle = '';
   for (const pat of titlePatterns) {
     const m = text.match(pat);
     if (m) { jobTitle = m[0].replace(/\s+/g, ' ').trim(); break; }
+  }
+  // If no pattern matched, try to extract the title from the first few lines
+  // (typically the line right after the candidate name)
+  if (!jobTitle) {
+    const shortLines = lines.slice(0, 8);
+    const nameLineIdx = shortLines.findIndex(l => /^[A-Z][a-z]+(?: [A-Z][a-z]+){1,4}$/.test(l));
+    if (nameLineIdx !== -1 && nameLineIdx + 1 < shortLines.length) {
+      const candidate = shortLines[nameLineIdx + 1];
+      // Accept the next line as title only if it looks like a job title (not an email/phone/url)
+      if (
+        candidate.length > 3 &&
+        candidate.length < 80 &&
+        !/[@\d]{3}/.test(candidate) &&
+        !/^https?/i.test(candidate)
+      ) {
+        jobTitle = candidate;
+      }
+    }
   }
 
   const sectionHeaders: Record<string, RegExp> = {
@@ -138,10 +253,17 @@ function parseResumeText(text: string, fileName: string): ResumeJsonData {
     }
   }
 
+  const parsedExperience = parseExperience(sections.experience);
+
+  // If we still don't have a job title, use the title from the most recent experience
+  if (!jobTitle && parsedExperience.length > 0 && parsedExperience[0].title) {
+    jobTitle = parsedExperience[0].title;
+  }
+
   return {
     personalInfo: {
       name: nameLine ?? path.basename(fileName, path.extname(fileName)).replace(/[-_]/g, ' '),
-      title: jobTitle || 'Software Engineer',
+      title: jobTitle || '',
       email: emailMatch?.[0] ?? '',
       phone: phoneMatch?.[0]?.trim() ?? '',
       linkedin: linkedinMatch
@@ -151,7 +273,7 @@ function parseResumeText(text: string, fileName: string): ResumeJsonData {
     },
     professionalSummary: sections.summary.join(' ').trim(),
     technicalSkills: technicalSkills.length ? technicalSkills : [{ category: 'Skills', details: '' }],
-    professionalExperience: parseExperience(sections.experience),
+    professionalExperience: parsedExperience,
     projects: parseProjects(sections.projects),
     education: parseEducation(sections.education),
   };

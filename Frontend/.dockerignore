@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.gitignore
+*.log
+npm-debug.log*
+.tailored-data.tmp.json
+*.tsbuildinfo
+.env*.local

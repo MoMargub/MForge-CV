@@ -17,7 +17,10 @@ export class ApiError extends Error {
   }
 }
 
-const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL || 'http://localhost:8000';
+const FASTAPI_BASE_URL =
+  process.env.NEXT_PUBLIC_FASTAPI_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:8000';
 
 async function httpFetch<T>(endpoint: string, options: RequestInit & { baseUrl?: string } = {}): Promise<T> {
   const { baseUrl = FASTAPI_BASE_URL, headers: customHeaders, body, ...rest } = options;

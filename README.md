@@ -13,7 +13,7 @@ An intelligent, full-stack application designed to help job seekers create, cust
 
 ## 🛠️ Getting Started (Docker Setup)
 
-This project is fully dockerized, meaning both the frontend UI and backend API (handled by Next.js) run together seamlessly inside a single container. You don't need to manually install Node.js or worry about browser dependencies for PDF generation.
+This project is fully dockerized, meaning both the frontend UI and backend API run together seamlessly inside containers. You don't need to manually install Node.js or worry about browser dependencies for PDF generation.
 
 ### Prerequisites
 
@@ -22,16 +22,37 @@ This project is fully dockerized, meaning both the frontend UI and backend API (
 
 ### 1. Start the Project
 
-Open your terminal in the project root directory (where this README is located) and run:
+Open a **PowerShell** terminal in the project root directory and run:
 
-```bash
-docker-compose up --build -d
+**Option A — Smart Script (Recommended):**
+
+```powershell
+.\start.ps1
 ```
 
-- `--build`: Ensures the latest code changes are built into the Docker image.
-- `-d`: Runs the container in "detached" mode (in the background), so you can continue using your terminal.
+This automatically detects whether images are already built and starts instantly without reinstalling packages. `npm install` / `pip install` only runs on the very first start or when you pass `-Build`.
 
-**Once started, open your web browser and navigate to:**  
+| Command | What it does |
+|---|---|
+| `.\start.ps1` | ⚡ Start instantly — no reinstall (recommended for daily use) |
+| `.\start.ps1 -Build` | 🔨 Rebuild — only when `package.json` or `requirements.txt` changes |
+| `.\start.ps1 -Down` | 🛑 Stop the project |
+| `.\start.ps1 -Logs` | 📋 Stream live logs |
+
+**Option B — Manual Docker commands:**
+
+```bash
+# First time only (or after dependency changes):
+docker-compose up --build -d
+
+# Every other time — starts instantly without reinstalling:
+docker-compose up -d
+```
+
+> ⚠️ **Do NOT use `--build` every time.** It forces Docker to re-run installs.
+> Use `docker-compose up -d` for daily starts — it reuses the existing built image.
+
+**Once started, open your web browser and navigate to:**
 👉 **http://localhost:3000**
 
 ### 2. Stop the Project
@@ -42,7 +63,7 @@ When you are done and want to stop the application, run:
 docker-compose down
 ```
 
-This safely stops and removes the running container.
+This safely stops and removes the running containers.
 
 ### 3. View Application Logs
 

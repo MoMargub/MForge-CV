@@ -40,8 +40,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     const resumeData = normalizeResumeData(parsedData);
-    const { data: tailoredData } = tailorResumeData(resumeData, jd);
-    const ats = calculateAtsScore(tailoredData, jd);
+    // Score the ORIGINAL CV, not the tailored one!
+    const ats = calculateAtsScore(resumeData, jd);
 
     return NextResponse.json({
       success: true,

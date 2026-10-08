@@ -1,6 +1,7 @@
 FROM node:22-slim
 
-# Install dependencies required by Puppeteer/Chromium for headless rendering
+# ── System dependencies (Puppeteer / Chromium) ────────────────────────────────
+# Cached permanently — only re-runs if this RUN instruction itself changes.
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -16,18 +17,20 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# ── npm dependencies ──────────────────────────────────────────────────────────
+# IMPORTANT: Copy package files FIRST (before source code).
+# Docker caches this layer. npm install only re-runs when package.json changes.
 COPY package*.json ./
 RUN npm install
 
-# Copy all files
+# ── Application source ────────────────────────────────────────────────────────
+# Copying source code here — after npm install.
+# Changing .ts/.tsx files only invalidates THIS layer and below, NOT npm install.
 COPY . .
 
-# Build the Next.js application
+# ── Next.js production build ──────────────────────────────────────────────────
 RUN npm run build
 
-# Expose the port the app runs on
 EXPOSE 3000
 
-# Start the Next.js application
 CMD ["npm", "run", "start-next"]

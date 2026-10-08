@@ -25,7 +25,8 @@ export const resumeApi = {
     const fd = new FormData();
     fd.append('jd', jd);
     if (resumeData) fd.append('resumeData', resumeData);
-    return apiClient.postForm<ScoreResumeResponse>('/api/v1/resume/score', fd);
+    // Use Next.js API route — works in all environments (Docker, local, Netlify)
+    return apiClient.postForm<ScoreResumeResponse>('/api/score', fd, { baseUrl: '' });
   },
 
   uploadResumeToNextApi: (file: File) => {
